@@ -48,6 +48,14 @@
         } catch (_) {
           /* storage unavailable */
         }
+      },
+      remove(key) {
+        memory.delete(key);
+        try {
+          localStorage.removeItem(prefix + key);
+        } catch (_) {
+          /* storage unavailable */
+        }
       }
     };
   })();
@@ -172,6 +180,7 @@
     classTitle: $("#class-title"),
     classGrid: $("#class-grid"),
     changeClassBtn: $("#change-class-btn"),
+    quitBtn: $("#quit-btn"),
     classLabel: $("#class-label"),
     footClass: $("#foot-class"),
     progress: $("#progress"),
@@ -425,6 +434,8 @@
     document.body.dataset.view = name;
     // no switching class to dodge a question that is already on screen
     els.changeClassBtn.disabled = name === "question";
+    // quitting only makes sense mid-attempt; a finished attempt must still reach the summary and upload
+    els.quitBtn.hidden = !((name === "question" || name === "result") && state.attempt && !isFinished(state.attempt));
     els.progress.hidden = !(name === "question" || name === "result");
     els.teacherBtn.hidden = name === "question" || name === "admin";
     // views differ in height; bring the top of the card back into view if it scrolled away
@@ -833,6 +844,27 @@
     startTurn();
   }
 
+  // Throws the unfinished attempt away: nothing is uploaded, and choosing the class again
+  // asks for the code and draws a new random set.
+  function quitAttempt() {
+    const cls = findClass(state.classId);
+    if (!cls || !state.attempt || isFinished(state.attempt)) return;
+    const ok = window.confirm(
+      "Quit the quiz?\n\nYour answers so far will be deleted and no result will be saved. You can start again from the beginning."
+    );
+    // the timer kept running while the dialog was open; it may have already moved on
+    if (!ok || !state.attempt || isFinished(state.attempt)) return;
+    stopTimer();
+    store.remove(`attempt:${cls.id}`);
+    state.attempt = null;
+    state.current = null;
+    state.selected = null;
+    delete els.card.dataset.result;
+    delete els.card.dataset.summary;
+    openClassPicker();
+    announce("Quiz quit. Your attempt was deleted.");
+  }
+
   /* ---------- saving results ---------- */
 
   function resultPayload(attempt, classId) {
@@ -1149,6 +1181,7 @@
     els.joinBack.addEventListener("click", openClassPicker);
     els.sSaveRetry.addEventListener("click", () => submitResult(state.attempt));
     els.teacherBtn.addEventListener("click", openAdmin);
+    els.quitBtn.addEventListener("click", quitAttempt);
     els.adminForm.addEventListener("submit", onAdminSubmit);
     els.adminRefresh.addEventListener("click", refreshResults);
     els.adminBack.addEventListener("click", closeAdmin);

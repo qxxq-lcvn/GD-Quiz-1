@@ -796,6 +796,13 @@ kbd {
   opacity: 0.45;
   cursor: not-allowed;
 }
+.pill-btn--quit {
+  color: var(--bad-ink);
+  border-color: color-mix(in srgb, var(--bad) 45%, var(--line));
+}
+.pill-btn--quit:hover {
+  background: color-mix(in srgb, var(--bad) 12%, var(--surface));
+}
 
 .class-tile__status {
   font-size: 0.82rem;
@@ -1221,6 +1228,21 @@ kbd {
   }
   .hint {
     display: none;
+  }
+}
+
+/* very narrow phones: keep only the logo mark so the top-bar buttons fit */
+@media (max-width: 420px) {
+  .topbar {
+    gap: 10px;
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+  }
+  .brand__text {
+    display: none;
+  }
+  .topbar__actions {
+    gap: 8px;
   }
 }
 

@@ -40,6 +40,9 @@ The page uses Google Fonts and the confetti library from jsDelivr. Offline, font
 
 Progress is saved on the device, so a reload continues the attempt. Class can't be changed while a question is on screen.
 
+**Quit:** during an attempt, a **Quit** button shows in the top bar. After a confirmation, it deletes the attempt and goes back to the class picker. Nothing is uploaded. Choosing the class again asks for the code and draws a new random set. Quit is hidden once the last question is answered, so a finished attempt always reaches the summary and uploads.
+Note: a student can use Quit to restart whenever a score looks bad. Only finished attempts appear in the results, so the teacher doesn't see how many times someone quit.
+
 | Control | Action |
 | :--- | :--- |
 | <kbd>A</kbd> / <kbd>B</kbd> | Choose class |

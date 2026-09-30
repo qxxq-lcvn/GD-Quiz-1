@@ -182,7 +182,41 @@ window.QUIZ.PALETTE = [
       "True. A Rigidbody with Use Gravity ticked (the default) falls under gravity.",
       "a22.png", "Rigidbody component"),
     tf("a23", T.ui, "The Inspector shows the components of the selected object.", true,
-      "True. Select an object in the Hierarchy or Scene and the Inspector lists its components.")
+      "True. Select an object in the Hierarchy or Scene and the Inspector lists its components."),
+
+    /* extra pool (text only, no screenshot needed) */
+    mcq("a24", T.concepts, "Which of these is a game engine?",
+      ["Unity", "Photoshop", "Audacity", "Excel"], "A",
+      "Unity is a game engine: it combines rendering, physics, audio and scripting in one editor."),
+    mcq("a25", T.setup, "Which programming language do Unity scripts use?",
+      ["C#", "Python", "Java", "Lua"], "A",
+      "Unity scripts are written in C# and usually edited in Visual Studio."),
+    mcq("a26", T.ui, "Which window shows all the files (assets) in your project?",
+      ["Project", "Hierarchy", "Inspector", "Game"], "A",
+      "The Project window shows every asset in the Assets folder: scripts, materials, prefabs, scenes and more."),
+    mcq("a27", T.objects, "Which component draws an object's mesh so you can see it?",
+      ["Mesh Renderer", "Rigidbody", "Box Collider", "Audio Source"], "A",
+      "The Mesh Renderer draws the mesh with its material. Without it the object is invisible."),
+    mcq("a28", T.prefabs, "How do you create a prefab?",
+      [
+        "Drag a GameObject from the Hierarchy into the Project window",
+        "Right-click the Scene view and choose Bake",
+        "Add a Prefab component in the Inspector",
+        "Press Ctrl+P"
+      ], "A",
+      "Dragging a GameObject from the Hierarchy into the Project window saves it as a prefab asset."),
+    mcq("a29", T.materials, "What do you drag onto a 3D object to change its colour and surface look?",
+      ["A material", "A script", "A scene", "An animation clip"], "A",
+      "A material defines how a surface looks: colour, textures, shine. Drag it onto the object to apply it."),
+    mcq("a30", T.git, "Which command saves your staged changes as a snapshot in the local repository?",
+      ["git commit", "git push", "git clone", "git status"], "A",
+      "git commit records the staged changes locally. git push is the step that sends them to GitHub."),
+    tf("a31", T.ui, "The Console window can show errors from your scripts.", true,
+      "True. Script errors, warnings and Debug.Log messages all appear in the Console."),
+    tf("a32", T.prefabs, "Editing a prefab asset updates all of its instances in the scene.", true,
+      "True. Changes to the prefab asset flow to every instance, except for values an instance has overridden."),
+    tf("a33", T.materials, "One material can be used by many objects at the same time.", true,
+      "True. Many objects can share one material. Changing the material changes all of them.")
   ];
 
   const CLASS_B = [
@@ -265,17 +299,62 @@ window.QUIZ.PALETTE = [
     tf("b22", T.git, "git commit uploads your work to GitHub.", false,
       "False. git commit saves a snapshot locally. git push uploads it to GitHub."),
     tf("b23", T.objects, "A child object moves with its parent.", true,
-      "True. A child's Transform is relative to its parent, so it follows the parent's movement.")
+      "True. A child's Transform is relative to its parent, so it follows the parent's movement."),
+
+    /* extra pool (text only, no screenshot needed) */
+    mcq("b24", T.concepts, "Which genre is about building bases and commanding armies in real time?",
+      ["RTS", "Platformer", "Racing", "Rhythm"], "A",
+      "Real-time strategy (RTS) games have players gather resources, build and command units while the clock runs."),
+    mcq("b25", T.setup, "Which app do you usually use to write C# scripts for Unity?",
+      ["Visual Studio", "Paint", "Unity Hub", "Audacity"], "A",
+      "Visual Studio (or VS Code) is the code editor. Unity opens it when you double-click a script."),
+    mcq("b26", T.ui, "Where are the Play, Pause and Step buttons?",
+      ["The toolbar at the top of the Editor", "The Hierarchy", "The Project window", "The Console"], "A",
+      "Play, Pause and Step sit in the toolbar at the top centre of the Unity Editor."),
+    mcq("b27", T.objects, "Which component lets an object play a sound?",
+      ["Audio Source", "Audio Listener", "Light", "Camera"], "A",
+      "An Audio Source plays sound. The Audio Listener (usually on the camera) is the ‘ears’ that hear it."),
+    mcq("b28", T.prefabs, "What is the main benefit of a prefab?",
+      [
+        "Reuse one object many times and update every copy at once",
+        "Make the game run faster on every device",
+        "Upload the project to GitHub",
+        "Turn 3D models into 2D sprites"
+      ], "A",
+      "A prefab is a reusable template. Edit the prefab once and every copy in your scenes updates."),
+    mcq("b29", T.materials, "Which material setting makes a surface glow?",
+      ["Emission", "Albedo", "Normal map", "Metallic"], "A",
+      "Emission makes a material give off light colour, so it looks like it glows."),
+    mcq("b30", T.git, "Which command shows which files have changed and which are staged?",
+      ["git status", "git push", "git clone", "git init"], "A",
+      "git status lists changed, staged and untracked files. Run it often before you commit."),
+    tf("b31", T.ui, "You change a material's colour in the Console window.", false,
+      "False. Select the material and change its colour in the Inspector. The Console only shows messages."),
+    tf("b32", T.objects, "Every GameObject has a Transform component.", true,
+      "True. Every GameObject has a Transform for its position, rotation and scale. It can't be removed."),
+    tf("b33", T.git, "git clone downloads a copy of a repository to your computer.", true,
+      "True. git clone copies the whole repository, including its history, from GitHub to your computer.")
   ];
 
+  /*
+   * Each attempt draws a random set from the class pool: `pick.mcq` multiple-choice and
+   * `pick.tf` True/False questions. Students next to each other get different question
+   * sets, in a different order, with the options shuffled.
+   */
   window.QUIZ.CLASSES = [
-    { id: "A", name: "Class A", questions: CLASS_A },
-    { id: "B", name: "Class B", questions: CLASS_B }
+    { id: "A", name: "Class A", questions: CLASS_A, pick: { mcq: 16, tf: 7 } },
+    { id: "B", name: "Class B", questions: CLASS_B, pick: { mcq: 16, tf: 7 } }
   ];
 
   /* dev-time check: duplicate ids, wrong option counts, out-of-range answers */
   const seen = new Set();
   for (const cls of window.QUIZ.CLASSES) {
+    for (const type of ["mcq", "tf"]) {
+      const available = cls.questions.filter((q) => q.type === type).length;
+      if (cls.pick[type] > available) {
+        console.warn(`[quiz] ${cls.name} picks ${cls.pick[type]} ${type} questions but only has ${available}`);
+      }
+    }
     for (const q of cls.questions) {
       const where = `${cls.name} ${q.id}`;
       if (seen.has(q.id)) console.warn(`[quiz] duplicate id: ${where}`);

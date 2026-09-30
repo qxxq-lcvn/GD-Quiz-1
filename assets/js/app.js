@@ -261,10 +261,18 @@
   function loadAttempt(cls) {
     const saved = store.get(`attempt:${cls.id}`, null);
     const ids = cls.questions.map((q) => q.id);
-    // drop a saved attempt from an older version, or whose questions no longer match the class pool
-    if (!saved || !saved.name || !saved.id) return null;
-    if (saved.order.length !== ids.length || !saved.order.every((id) => ids.includes(id))) return null;
+    // drop a saved attempt from an older version, or with questions no longer in the class pool
+    if (!saved || !saved.name || !saved.id || !Array.isArray(saved.order) || saved.order.length === 0) return null;
+    if (!saved.order.every((id) => ids.includes(id))) return null;
     return saved;
+  }
+
+  const attemptSize = (cls) => cls.pick.mcq + cls.pick.tf;
+
+  // Random set for one attempt: pick.mcq multiple-choice + pick.tf True/False, then mixed together.
+  function drawQuestionIds(cls) {
+    const draw = (type) => shuffle(cls.questions.filter((q) => q.type === type)).slice(0, cls.pick[type]);
+    return shuffle([...draw("mcq"), ...draw("tf")]).map((q) => q.id);
   }
 
   function newAttempt(cls, { name, code }) {
@@ -272,7 +280,7 @@
       id: randomId(),
       name,
       code,
-      order: shuffle(cls.questions.map((q) => q.id)),
+      order: drawQuestionIds(cls),
       answers: [],
       startedAt: Date.now(),
       finishedAt: null,
@@ -303,7 +311,7 @@
 
   function tileStatus(cls) {
     const attempt = loadAttempt(cls);
-    if (!attempt) return `${cls.questions.length} questions`;
+    if (!attempt) return `${attemptSize(cls)} questions`;
     if (isFinished(attempt)) {
       const score = attempt.answers.filter((a) => a.correct).length;
       return `${attempt.name} · Score ${score} / ${attempt.order.length}`;

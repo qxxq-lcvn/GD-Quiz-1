@@ -1,8 +1,10 @@
 # Unity Quiz · Weeks 1–2
 
-A class quiz for Unity Weeks 1–2. Students pick **Class A** or **Class B**, answer every question for their class once (in a shuffled order), and finish on a summary screen with their score and statistics.
+A class quiz for Unity Weeks 1–2. Students pick **Class A** or **Class B**, answer a random set of questions from their class pool, and finish on a summary screen with their score and statistics.
 
-Each class has 23 questions: 16 multiple choice and 7 True/False. No question appears in both classes.
+Each class has a pool of 33 questions: 23 multiple choice and 10 True/False. No question appears in both classes.
+Each attempt draws 23 of them at random: 16 multiple choice and 7 True/False. Students sitting together get different question sets, in a different order, with the answer options shuffled. Two attempts share about 16 questions on average.
+To change the mix, edit `pick: { mcq: 16, tf: 7 }` for each class in `assets/js/data.js`. Smaller numbers mean less overlap between students.
 
 Built with the dice-quiz pattern from the NGEP Mini-Quiz development plan, minus the dice: plain HTML, CSS and JavaScript, with no build step.
 
@@ -82,7 +84,7 @@ Codes are not case-sensitive.
 Click **Teacher** at the bottom of the quiz card and enter the admin code. The panel shows how many results there are, then gives three buttons:
 
 - **All classes (CSV):** one row per attempt, with a compact `Answers` column (`a01=1 a02=0 a03=T`: 1 correct, 0 wrong, T time's up).
-- **Class A (CSV)** / **Class B (CSV):** one row per attempt plus one column per question (1 correct, 0 wrong or time's up), ready for Excel or Google Sheets.
+- **Class A (CSV)** / **Class B (CSV):** one row per attempt plus one column for every question in the pool (1 correct, 0 wrong or time's up, blank if that student didn't get the question), ready for Excel or Google Sheets.
 
 Columns: Submitted At, Class, Student Name, Attempt (1st, 2nd… try by that name), Score, Total, Percent, Correct, Wrong, Timed Out, Avg Answer Time (s), Total Time (s), Started At, Finished At.
 You can also read the **Results** tab in the Google Sheet directly.
@@ -99,7 +101,7 @@ You can also read the **Results** tab in the Google Sheet directly.
 Most questions refer to a screenshot. Put the images in `assets/img/questions/`, named after the question id (`a01.png` … `a23.png`, `b01.png` … `b23.png`).
 Each question's `imageNote` in `assets/js/data.js` describes what the screenshot should show.
 If a file is missing, the question shows a "Screenshot not added yet" box and the console logs which file it expected.
-Questions a19, a21, a23 and b19–b23 have no screenshot.
+Questions a19, a21, a23, a24–a33, b19–b23 and b24–b33 have no screenshot.
 
 ## Editing questions
 
